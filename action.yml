@@ -50,5 +50,5 @@ runs:
         echo "Starting tunnel in background"
         ssh -o LogLevel=ERROR -N -L 8888:localhost:${{ inputs.maven-local-port }} ${{ inputs.ssh-username }}@${{ inputs.ssh-hostname }} &
         echo "Running maven deploy"
-        mvn deploy -B -DskipTests -DaltDeploymentRepository=usethesource-releases::default::http://localhost:8888/maven/
+        mvn deploy -B -DskipTests -DaltReleaseDeploymentRepository=usethesource-releases::default::http://localhost:8888/maven/
       shell: bash
