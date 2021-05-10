@@ -30,16 +30,16 @@ runs:
     - id: gen-settings_xml
       run: |
         sed \
-        -e "s/__USERNAME__/$${ inputs.maven-username }}/g" \
-        -e "s/__PASSWORD__/$${ inputs.maven-password }}/g" \
+        -e "s/__USERNAME__/${{ inputs.maven-username }}/g" \
+        -e "s/__PASSWORD__/${{ inputs.maven-password }}/g" \
         "$GITHUB_ACTION_PATH/settings-template.xml" > "$HOME/.m2/settings.xml"
       shell: bash
 
     - id: install-ssh-key
       run: |
         mkdir -p ~/.ssh/
-        cat "$${ inputs.ssh-private-key }}" > ~/.ssh/id_ed25519
-        cat "$${ inputs.ssh-known-host }}" >> ~/.ssh/known_hosts
+        printf "%s" "${{ inputs.ssh-private-key }}" > ~/.ssh/id_ed25519
+        printf "%s" "${{ inputs.ssh-known-host }}" >> ~/.ssh/known_hosts
         chmod -R og-rwx ~/.ssh/
       shell: bash
 
@@ -48,5 +48,5 @@ runs:
         echo "Starting tunnel in background"
         ssh -N -L 8888:localhost:${{ inputs.maven-local-port }} ${{ inputs.ssh-username }}@${{ inputs.ssh-hostname }} &
         echo "Running maven deploy"
-        mvn deploy -B -DskipTests -DaltDeploymentRepository=usethesource-releases::default::http://locahost:8888/
+        mvn deploy -B -DskipTests -DaltDeploymentRepository=usethesource-releases::default::http://locahost:8888/maven/
       shell: bash
