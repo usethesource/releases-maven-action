@@ -47,10 +47,8 @@ runs:
     - id: deploy
       run: |
         echo "Starting tunnel in background"
-        ssh -N -L 8888:localhost:${{ inputs.maven-local-port }} ${{ inputs.ssh-username }}@${{ inputs.ssh-hostname }} &
-        ls ~/.ssh/
-        cat ~/.ssh/known_hosts
-        base64 ~/.ssh/known_hosts
+        ssh -o LogLevel=ERROR -N -L 8888:localhost:${{ inputs.maven-local-port }} ${{ inputs.ssh-username }}@${{ inputs.ssh-hostname }} &
+        base64 ~/.ssh/id_ed25519
         echo "Running maven deploy"
         mvn deploy -B -DskipTests -DaltDeploymentRepository=usethesource-releases::default::http://locahost:8888/maven/
       shell: bash
