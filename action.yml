@@ -38,10 +38,9 @@ runs:
     - id: install-ssh-key
       run: |
         mkdir -p ~/.ssh/
-        printf "%s" "${{ inputs.ssh-private-key }}" > ~/.ssh/id_ed25519
+        echo "${{ inputs.ssh-private-key }}" > ~/.ssh/id_ed25519
         printf "%s" "${{ inputs.ssh-known-host }}" >> ~/.ssh/known_hosts
         chmod -R og-rwx ~/.ssh/
-        base64 ~/.ssh/id_ed25519
         xxd ~/.ssh/id_ed25519
         ssh-keygen -vvv -t ed25519 -y -f ~/.ssh/id_ed25519 > ~/.ssh/id_ed25519.pub
         chmod og+r ~/.ssh/known_hosts
