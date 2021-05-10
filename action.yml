@@ -1,21 +1,52 @@
-name: 'Hello World'
-description: 'Greet someone'
+name: 'Use The Source Deploy Maven Releases'
+description: 'Special github action to help with maven deploy to our release server'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  maven-username:
+    description: 'Maven HTTP username'
     required: true
-    default: 'World'
-outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-id }}
+  maven-password:
+    description: 'Maven HTTP password'
+    required: true
+  maven-local-port:
+    description: 'Local port number for maven'
+    required: true
+
+  ssh-hostname:
+    description: 'SSH server hostname to connect to'
+    required: true
+  ssh-known-host:
+    description: 'SSH server-keys for the usethesource server, generate it with `ssh-keyscan -H <server-hostname>`'
+    required: true
+  ssh-username:
+    description: 'SSH username'
+    required: true
+  ssh-private-key:
+    description: 'SSH private key of which the public key is registered for the user (.ssh/authorized_keys), please make id an ed25519 key'
+    required: true
+
 runs:
   using: "composite"
   steps:
-    - run: echo Hello ${{ inputs.who-to-greet }}.
+    - id: Generate settings.xml with credentials
+      run: |
+        sed \
+        -e "s/__USERNAME__/$${ inputs.maven-username }}/g" \
+        -e "s/__PASSWORD__/$${ inputs.maven-password }}/g" \
+        "$GITHUB_ACTION_PATH/settings-template.xml" > "$HOME/.m2/settings.xml"
       shell: bash
-    - id: random-number-generator
-      run: echo "::set-output name=random-id::$(echo $RANDOM)"
+
+    - id: Install SSH key
+      run: |
+        mkdir -p ~/.ssh/
+        cat "$${ inputs.ssh-private-key }}" > ~/.ssh/id_ed25519
+        cat "$${ inputs.ssh-known-host }}" >> ~/.ssh/known_hosts
+        chmod -R og-rwx ~/.ssh/
       shell: bash
-    - run: ${{ github.action_path }}/goodbye.sh
+
+    - id: Deploy
+      run: |
+        echo "Starting tunnel in background"
+        ssh -N -L 8888:localhost:${{ inputs.maven-local-port }} ${{ inputs.ssh-username }}@${{ inputs.ssh-hostname }} &
+        echo "Running maven deploy"
+        mvn deploy -B -DskipTests -DaltDeploymentRepository=usethesource-releases::default::http://locahost:8888/
       shell: bash
