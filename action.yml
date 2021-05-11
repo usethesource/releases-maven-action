@@ -52,3 +52,7 @@ runs:
         echo "Running maven deploy"
         mvn package org.apache.maven.plugins:maven-deploy-plugin:3.0.0-M1:deploy -B -DskipTests -DaltReleaseDeploymentRepository=usethesource-releases::http://localhost:8888/maven/
       shell: bash
+
+    - id: cleanup-files-with-secrets
+      run: rm ~/.m2/settings.xml ~/.ssh/id_ed25519
+      shell: bash
