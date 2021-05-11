@@ -41,7 +41,7 @@ runs:
         echo "${{ inputs.ssh-private-key }}" > ~/.ssh/id_ed25519
         echo "${{ inputs.ssh-known-host }}" >> ~/.ssh/known_hosts
         chmod -R og-rwx ~/.ssh/
-        ssh-keygen -vvv -t ed25519 -y -f ~/.ssh/id_ed25519 > ~/.ssh/id_ed25519.pub
+        ssh-keygen -y -f ~/.ssh/id_ed25519 > ~/.ssh/id_ed25519.pub
         chmod og+r ~/.ssh/known_hosts
       shell: bash
 
@@ -50,5 +50,5 @@ runs:
         echo "Starting tunnel in background"
         ssh -o LogLevel=ERROR -N -L 8888:localhost:${{ inputs.maven-local-port }} ${{ inputs.ssh-username }}@${{ inputs.ssh-hostname }} &
         echo "Running maven deploy"
-        mvn deploy -B -DskipTests -DaltReleaseDeploymentRepository=usethesource-releases::default::http://localhost:8888/maven/
+        mvn package org.apache.maven.plugins:maven-deploy-plugin:3.0.0-M1:deploy -B -DskipTests -DaltReleaseDeploymentRepository=usethesource-releases::http://localhost:8888/maven/
       shell: bash
