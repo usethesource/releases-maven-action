@@ -24,6 +24,11 @@ inputs:
     description: 'SSH private key of which the public key is registered for the user (.ssh/authorized_keys), please make id an ed25519 key'
     required: true
 
+  maven-options:
+    required: false
+    description: 'Extra maven options'
+    default: ''
+
 runs:
   using: "composite"
   steps:
@@ -50,7 +55,7 @@ runs:
         echo "Starting tunnel in background"
         ssh -o LogLevel=ERROR -N -L 8888:localhost:${{ inputs.maven-local-port }} ${{ inputs.ssh-username }}@${{ inputs.ssh-hostname }} &
         echo "Running maven deploy"
-        mvn package org.apache.maven.plugins:maven-deploy-plugin:3.0.0-M1:deploy -B -DskipTests -DaltReleaseDeploymentRepository=usethesource-releases::http://localhost:8888/maven/
+        mvn verify org.apache.maven.plugins:maven-deploy-plugin:3.0.0-M1:deploy -B -DskipTests -DaltReleaseDeploymentRepository=usethesource-releases::http://localhost:8888/maven/ ${{ inputs.maven-options }}
       shell: bash
 
     - id: cleanup-files-with-secrets
