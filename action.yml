@@ -48,6 +48,9 @@ runs:
         chmod -R og-rwx ~/.ssh/
         ssh-keygen -y -f ~/.ssh/id_ed25519 > ~/.ssh/id_ed25519.pub
         chmod og+r ~/.ssh/known_hosts
+        echo "Host *" >> ~/.ssh/config
+        echo "ServerAliveInterval 240" >> ~/.ssh/config
+        echo "ServerAliveCountMax 2" >> ~/.ssh/config
       shell: bash
 
     - id: deploy
@@ -59,5 +62,6 @@ runs:
       shell: bash
 
     - id: cleanup-files-with-secrets
+      if: always()
       run: rm ~/.m2/settings.xml ~/.ssh/id_ed25519
       shell: bash
