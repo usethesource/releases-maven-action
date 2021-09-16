@@ -62,6 +62,5 @@ runs:
       shell: bash
 
     - id: cleanup-files-with-secrets
-      if: always()
       run: rm ~/.m2/settings.xml ~/.ssh/id_ed25519
       shell: bash
