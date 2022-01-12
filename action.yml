@@ -23,6 +23,11 @@ inputs:
   ssh-private-key:
     description: 'SSH private key of which the public key is registered for the user (.ssh/authorized_keys), please make id an ed25519 key'
     required: true
+    
+  working-directory:
+    description: 'Current working directory'
+    required: false
+    default: '.'
 
   maven-options:
     required: false
@@ -55,6 +60,7 @@ runs:
 
     - id: deploy
       run: |
+        cd ${{ inputs.working-directory }}
         echo "Starting tunnel in background"
         ssh -o LogLevel=ERROR -N -L 8888:localhost:${{ inputs.maven-local-port }} ${{ inputs.ssh-username }}@${{ inputs.ssh-hostname }} &
         echo "Running maven deploy"
