@@ -23,6 +23,7 @@ Add the following section to your github deployment:
           ssh-username: ${{ secrets.RELEASE_SSH_USERNAME }}
           ssh-private-key: ${{ secrets.RELEASE_SSH_PRIVATE_KEY }}
           maven-options: "-DoptionalFlags -DyouWantToPass"
+          working-directory: "./subdirectory"
 ```
 
 Note that the if condition doesn't support regex. If you want to be more restrictive, you can add the following guards at the top of your action:
