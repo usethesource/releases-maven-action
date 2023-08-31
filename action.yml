@@ -37,6 +37,13 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - id: "Assure valid keys are set"
+      if: ${{ inputs.ssh-prvate-key == '' || inputs.ssh-known-hosts == '' || inputs.maven-username == '' }}
+      run: |
+         echo "*** ERROR! ****"
+         echo "The action did not get the parameters supplied. In most cases this is due to lacking rights for the usethesource secrets"
+         echo "Please provide this and run the action again"
+         exit 1
     - id: gen-settings_xml
       run: |
         sed \
